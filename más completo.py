@@ -1,11 +1,22 @@
 import pygame
 import random
+import moviepy.editor as mp
 import time
+
 
 # Variables de cuadrícula
 GRID_SIZE = 75
 GRID_WIDTH = 1050 // GRID_SIZE
 GRID_HEIGHT = 600 // GRID_SIZE
+
+
+# Función para reproducir el video de introducción
+def reproducir_intro(video_path):
+    clip = mp.VideoFileClip(video_path)
+    clip.preview()
+
+
+video_path = "INTRO OLIMPIADAS.mp4"
 
 
 def damePantalla():
@@ -17,7 +28,7 @@ def damePantalla():
 
 limite_izquierdo = 0
 limite_derecho = 1152 - 10
-limite_superior = 60
+limite_superior = 40
 limite_inferior = 648
 
 
@@ -25,7 +36,7 @@ def crear_bolsas(cantidad):
     bolsas = []
     limite_izquierdo = 0
     limite_derecho = 1152 - 10
-    limite_superior = 60
+    limite_superior = 40
     limite_inferior = 648
     bolsas = []
     for _ in range(int(cantidad * 0.4)):
@@ -104,8 +115,8 @@ imgUAIBOTINO = pygame.transform.scale(
 imgUABOTINA = pygame.transform.scale(
     pygame.image.load("UAIBOTINA.png").convert_alpha(), (GRID_SIZE, GRID_SIZE)
 )
-imgGanaste = pygame.image.load("imgGanaste.png")
-imgPerdiste = pygame.image.load("imgPerdiste.png")
+imgGanaste = pygame.image.load("cartel de victoria.png")
+imgPerdiste = pygame.image.load("cartel perdiste.png")
 # Cargar imágenes de las bolsas
 imgBolsaVerde = pygame.transform.scale(
     pygame.image.load("BolsaVerde.png").convert_alpha(), (GRID_SIZE, GRID_SIZE)
@@ -151,17 +162,19 @@ def cambiarPersonaje():
         time.sleep(0.1)
 
 
-tiempoLimite = 25
+tiempoLimite = 40
+tiempo_restante = 40
 
 
 def reiniciar_juego():
-    global personajeActualIndex, personajeActual, avatar, avatar_rect, tiempoLimite, cargaActual, contadorcestoVer, contadorcestoGri, bolsas, objetivoGanar
+    global personajeActualIndex, personajeActual, avatar, avatar_rect, tiempoLimite, tiempo_restante, cargaActual, contadorcestoVer, contadorcestoGri, bolsas, objetivoGanar
     personajeActualIndex = 0
     personajeActual = personajes[personajeActualIndex]
     avatar = imgUAIBOT
     avatar_rect.x = 100
     avatar_rect.y = 500
-    tiempoLimite = 25
+    tiempoLimite = 40
+    tiempo_restante = 40
     cargaActual = {p: {"verdes": 0, "grises": 0} for p in personajes}
     contadorcestoVer = 0
     contadorcestoGri = 0
@@ -217,14 +230,13 @@ def dibujarUIyFondo():
 ANCHO_BARRA = 300
 ALTO_BARRA = 15
 x_barras = 15
-y_barras = 60
+y_barras = 30
 tiempoL = True
 
 
 # Función para dibujar la barra de tiempo
-def dibujar_barra_de_tiempo(tiempo_transcurrido):
-    tiempoLimite = 25
-    tiempo_restante = tiempoLimite - tiempo_transcurrido
+def dibujar_barra_de_tiempo(tiempoLimite, tiempo_restante):
+
     proporción = tiempo_restante / tiempoLimite
     ancho_actual = int(ANCHO_BARRA * proporción)
     # Dibujar fondo de la barra (barra vacía)
@@ -236,12 +248,6 @@ def dibujar_barra_de_tiempo(tiempo_transcurrido):
     pygame.draw.rect(
         pantalla, (0, 255, 0), (x_barras, y_barras, ancho_actual, ALTO_BARRA)
     )
-
-    if tiempo_restante == 0:
-        tiempoL = False
-    else:
-        tiempoL = True
-        return tiempoL
 
 
 def contadorDeBolsasEnPantalla():
@@ -257,9 +263,9 @@ def contadorDeBolsasEnPantalla():
         colorBlanco,
         250,
         30,
-        colorAzul,
+        colorNegro,
         337,
-        30,
+        0,
     )
 
 
@@ -344,39 +350,16 @@ def cartelCestosGri():
     )
 
 
-def mostrar_ventana_emergente(mensaje, ancho=400, alto=200):
-    # Dimensiones y posición de la ventana emergente
-    ventana_rect = pygame.Rect(
-        (pantalla.get_width() - ancho) // 2,
-        (pantalla.get_height() - alto) // 2,
-        ancho,
-        alto,
-    )
-
-    # Superficie para la ventana emergente
-    ventana_surface = pygame.Surface((ancho, alto))
-    ventana_surface.fill(colorBlanco)
-
-    # Dibujar un borde alrededor de la ventana emergente
-    pygame.draw.rect(ventana_surface, colorNegro, ventana_surface.get_rect(), 2)
-
-    # Renderizar el mensaje
-    texto_mensaje = tipografiaGrande.render(mensaje, True, colorNegro)
-    texto_rect = texto_mensaje.get_rect(center=(ancho // 2, alto // 2))
-    ventana_surface.blit(texto_mensaje, texto_rect)
-
-    # Mostrar la ventana emergente en la pantalla principal
-    pantalla.blit(ventana_surface, ventana_rect.topleft)
-    pygame.display.flip()
-
-
 def dibujarJugador():
     pantalla.blit(avatar, avatar_rect)
 
 
+perder = False
+
+
 def dibujarCarga():
     carga_texto = f"{personajeActual} Carga: {cargaActual[personajeActual]['verdes']} bolsas verdes y {cargaActual[personajeActual]['grises']} bolsas grises"
-    dibujarTexto(carga_texto, tipografia, colorBlanco, 325, 30, colorNegro, 15, 30)
+    dibujarTexto(carga_texto, tipografia, colorBlanco, 325, 30, colorNegro, 15, 0)
 
 
 def dibujarTodo():
@@ -390,7 +373,6 @@ def dibujarTodo():
 
 
 def reproducir_cancion_en_bucle(ruta_cancion):
-    """Reproduce una canción en bucle sin interrumpir el juego."""
     pygame.mixer.music.load(ruta_cancion)
     pygame.mixer.music.play(-1)
 
@@ -404,11 +386,19 @@ reproducir_cancion_en_bucle("musicaJugar.wav")
 mostrarBarra = False
 val = False
 
+reproducir_intro(video_path)
 
 while juegoEnEjecucion:
     contadorGanar = 1
+    if tiempo_restante > 0:
+        tiempoActual = (pygame.time.get_ticks() - ticksAlComenzar) / 1000
+        tiempo_restante = tiempoLimite - tiempoActual
+        tiempoL = True
+    else:
+        tiempoL = False
+
     dibujarTodo()
-    tiempoActual = (pygame.time.get_ticks() - ticksAlComenzar) / 1000
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             juegoEnEjecucion = False
@@ -511,8 +501,10 @@ while juegoEnEjecucion:
         mostrarBarra = True
         reiniciar_tiempo()
     cestos = contadorcestoGri + contadorcestoVer
+
     if mostrarBarra == True:
-        dibujar_barra_de_tiempo(tiempoActual)
+        dibujar_barra_de_tiempo(tiempoLimite, tiempo_restante)
+
     # Verificar condiciones de victoria
     if (
         cargaActual[personajeActual]["grises"] == 0
@@ -523,27 +515,23 @@ while juegoEnEjecucion:
             if tiempoLimite > 0:
                 tiempoLimite -= 1 / 60
                 if mostrarBarra:
-                    dibujar_barra_de_tiempo(tiempoActual)
+                    dibujar_barra_de_tiempo(tiempoLimite, tiempo_restante)
 
-    if cestos == objetivoGanar and tiempoL == True:
-        mensaje = tipografiaMuyGrande.render("¡¡Ganaste!!", True, colorVerde)
-        rect_texto = mensaje.get_rect(center=(1152 // 2, 648 // 2))
-        pantalla.blit(mensaje, rect_texto)
-        pygame.display.flip()
+            if cestos == objetivoGanar and tiempoL == True:
+                pantalla.blit(imgGanaste, (0, 0))
+                pygame.display.flip()
         time.sleep(2)
         reiniciar_juego()
         reiniciar_tiempo()
         mostrarBarra = False
-    elif tiempoL == False and cestos < objetivoGanar:
-        tiempo_restante = 0
-        print("perdiste")
-        mensaje = tipografiaMuyGrande.render("¡Perdiste!", True, (255, 0, 0))
-        rect_texto = mensaje.get_rect(center=(1152 // 2, 648 // 2))
-        pantalla.blit(mensaje, rect_texto)
+
+    if tiempoL == False:
+        pantalla.blit(imgPerdiste, (0, 0))
         pygame.display.flip()
-        time.sleep(2)  # Espera 2 segundos antes de reiniciar
+        time.sleep(4)
         reiniciar_juego()
         reiniciar_tiempo()
+        pygame.display.flip()
         mostrarBarra = False
 
     pygame.display.flip()
