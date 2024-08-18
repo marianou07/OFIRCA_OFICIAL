@@ -1,7 +1,7 @@
 import pygame
 import random
-import moviepy.editor as mp
 import time
+import moviepy.editor as mp
 
 
 # Variables de cuadrícula
@@ -10,13 +10,12 @@ GRID_WIDTH = 1050 // GRID_SIZE
 GRID_HEIGHT = 600 // GRID_SIZE
 
 
-# Función para reproducir el video de introducción
 def reproducir_intro(video_path):
     clip = mp.VideoFileClip(video_path)
     clip.preview()
 
 
-video_path = "INTRO OLIMPIADAS.mp4"
+video_path = "Intro.mp4"
 
 
 def damePantalla():
@@ -520,19 +519,18 @@ while juegoEnEjecucion:
             if cestos == objetivoGanar and tiempoL == True:
                 pantalla.blit(imgGanaste, (0, 0))
                 pygame.display.flip()
-        time.sleep(2)
-        reiniciar_juego()
-        reiniciar_tiempo()
-        mostrarBarra = False
-
-    if tiempoL == False:
-        pantalla.blit(imgPerdiste, (0, 0))
-        pygame.display.flip()
-        time.sleep(4)
-        reiniciar_juego()
-        reiniciar_tiempo()
-        pygame.display.flip()
-        mostrarBarra = False
+                time.sleep(2)
+                reiniciar_juego()
+                reiniciar_tiempo()
+                mostrarBarra = False
+            if tiempoL == False:
+                pantalla.blit(imgPerdiste, (0, 0))
+                pygame.display.flip()
+                time.sleep(4)
+                reiniciar_juego()
+                reiniciar_tiempo()
+                pygame.display.flip()
+                mostrarBarra = False
 
     pygame.display.flip()
     clock.tick(60)
