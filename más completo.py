@@ -10,6 +10,7 @@ GRID_WIDTH = 1050 // GRID_SIZE
 GRID_HEIGHT = 600 // GRID_SIZE
 
 
+#Función para  reproducir introduccion
 def reproducir_intro(video_path):
     clip = mp.VideoFileClip(video_path)
     clip.preview()
@@ -17,20 +18,20 @@ def reproducir_intro(video_path):
 
 video_path = "Intro.mp4"
 
-
+#funcion para configurar la pantalla 
 def damePantalla():
     pygame.init()
     pygame.display.set_caption("OFIRCA 2024 - Ronda 1 - Inicio")
     pantalla = pygame.display.set_mode((1152, 648))
     return pantalla
 
-
+#variable para definir limites del juego
 limite_izquierdo = 0
 limite_derecho = 1152 - 10
 limite_superior = 40
 limite_inferior = 648
 
-
+#funcion para dibujar las bolsas
 def crear_bolsas(cantidad):
     bolsas = []
     limite_izquierdo = 0
@@ -68,8 +69,11 @@ def crear_bolsas(cantidad):
 
 
 area_juego = pygame.Rect(limite_izquierdo, limite_superior, 1152, 648)
-# Personajes
+
+#personajes
 personajes = ["UAIBOT", "UAIBOTA", "UAIBOTINO", "UABOTINA"]
+
+#Carga de bolsas y capacidades de los personajes para llevar bolsas
 capacidades = {"UAIBOT": 2, "UAIBOTA": 2, "UAIBOTINO": 1, "UABOTINA": 1}
 cargaActual = {
     "UAIBOT": {"verdes": 0, "grises": 0},
@@ -77,8 +81,11 @@ cargaActual = {
     "UAIBOTINO": {"verdes": 0, "grises": 0},
     "UABOTINA": {"verdes": 0, "grises": 0},
 }
+
+#Cambio de personaje
 personajeActualIndex = 0
 personajeActual = personajes[personajeActualIndex]
+
 pantalla = damePantalla()
 pygame.font.init()
 tipografia = pygame.font.SysFont("Arial", 15)
@@ -93,7 +100,7 @@ colorVerde, colorAzul, colorBlanco, colorNegro, colorNaranja, colorBordeaux = (
     (102, 41, 53),
 )
 # Variables de bucle de juego
-ticksAlComenzar = pygame.time.get_ticks()
+
 clock = pygame.time.Clock()
 juegoEnEjecucion = True
 # Nueva variable para controlar el tiempo de cambio de personaje
@@ -235,7 +242,7 @@ tiempoL = True
 
 # Función para dibujar la barra de tiempo
 def dibujar_barra_de_tiempo(tiempoLimite, tiempo_restante):
-
+    pygame.time.get_ticks()
     proporción = tiempo_restante / tiempoLimite
     ancho_actual = int(ANCHO_BARRA * proporción)
     # Dibujar fondo de la barra (barra vacía)
@@ -387,8 +394,10 @@ val = False
 
 reproducir_intro(video_path)
 
+ticksAlComenzar = pygame.time.get_ticks()
 while juegoEnEjecucion:
     contadorGanar = 1
+
     if tiempo_restante > 0:
         tiempoActual = (pygame.time.get_ticks() - ticksAlComenzar) / 1000
         tiempo_restante = tiempoLimite - tiempoActual
@@ -471,6 +480,7 @@ while juegoEnEjecucion:
     # Niveles
     if keys[pygame.K_1]:
         time.sleep(0.2)
+        ticksAlComenzar = pygame.time.get_ticks()
         reiniciar_juego()
         cargaActual[personajeActual]["verdes"] = 0
         cargaActual[personajeActual]["grises"] = 0
@@ -481,6 +491,7 @@ while juegoEnEjecucion:
         mostrarBarra = True
     elif keys[pygame.K_2]:
         time.sleep(0.2)
+        ticksAlComenzar = pygame.time.get_ticks()
         reiniciar_juego()
         cargaActual[personajeActual]["verdes"] = 0
         cargaActual[personajeActual]["grises"] = 0
@@ -491,6 +502,7 @@ while juegoEnEjecucion:
         reiniciar_tiempo()
     elif keys[pygame.K_3]:
         time.sleep(0.2)
+        ticksAlComenzar = pygame.time.get_ticks()
         reiniciar_juego()
         cargaActual[personajeActual]["verdes"] = 0
         cargaActual[personajeActual]["grises"] = 0
@@ -532,6 +544,7 @@ while juegoEnEjecucion:
                 pygame.display.flip()
                 mostrarBarra = False
 
+    print(tiempo_restante)
     pygame.display.flip()
     clock.tick(60)
 
